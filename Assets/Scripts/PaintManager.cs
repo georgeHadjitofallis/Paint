@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 public class PaintManager : MonoBehaviour
 {
     public static Color SelectedColor { get; private set; }
+    public static int PenSize { get; private set; }
     void Awake()
     {
         SelectedColor = Color.black;
@@ -49,7 +50,7 @@ public class PaintManager : MonoBehaviour
                     pixelUV.x *= tex.width;
                     pixelUV.y *= tex.height;
 
-                    BrushAreaWithColor(pixelUV, SelectedColor, 1);
+                    BrushAreaWithColor(pixelUV, SelectedColor, PenSize);
                 }
                 else
                 {
@@ -87,5 +88,10 @@ public class PaintManager : MonoBehaviour
         }
 
         PaintCanvas.Texture.Apply();
+    }
+
+    public void ChangeWindDirection(Slider slider)
+    {
+        Debug.Log("New wind direction: " + slider.value);
     }
 }
