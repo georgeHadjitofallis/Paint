@@ -25,6 +25,11 @@ public class PaintCanvas : MonoBehaviour
     private void PrepareTemporaryTexture()
     {
         Texture = (Texture2D)GameObject.Instantiate(GetComponent<Renderer>().material.mainTexture);
+        Debug.Log(Texture.width);
+        Debug.Log(Texture.height);
+        Texture.Resize(1000, 1000);
+        Debug.Log(Texture.width);
+        Debug.Log(Texture.height);
         GetComponent<Renderer>().material.mainTexture = Texture;
     }
 }

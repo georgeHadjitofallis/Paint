@@ -12,7 +12,7 @@ public class PaintManager : MonoBehaviour
     
     }
 
-    void Update()
+    void FixedUpdate()
     {
         //Check if the left Mouse button is clicked
         if (Input.GetKey(KeyCode.Mouse0))
