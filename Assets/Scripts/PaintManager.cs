@@ -26,55 +26,53 @@ public class PaintManager : MonoBehaviour
         {
             //Debug.Log("Pressed");
 
-            if (!EventSystem.current.IsPointerOverGameObject())
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                //Debug.Log("HIT");
+                Debug.Log(hit.collider.gameObject.name);
 
-                RaycastHit hit;
-                if (Physics.Raycast(ray, out hit))
+                var pallet = hit.collider.GetComponent<PaintCanvas>();
+                if (pallet != null)
                 {
-                    //Debug.Log("HIT");
-                    Debug.Log(hit.collider.gameObject.name);
+                    //Debug.Log(hit.textureCoord);
+                    //Debug.Log(hit.point);
 
-                    var pallet = hit.collider.GetComponent<PaintCanvas>();
-                    if (pallet != null)
+                    Renderer rend = hit.transform.GetComponent<Renderer>();
+                    MeshCollider meshCollider = hit.collider as MeshCollider;
+
+                    if (rend == null || rend.sharedMaterial == null || rend.sharedMaterial.mainTexture == null || meshCollider == null)
+                        return;
+
+                    Texture2D tex = rend.material.mainTexture as Texture2D;
+                    Vector2 pixelUV = hit.textureCoord;
+                    pixelUV.x *= tex.width;
+                    pixelUV.y *= tex.height;
+
+                    BrushAreaWithColor(pixelUV, SelectedColor, (int)slider.value);
+                }
+                else
+                {
+                    Renderer rend = hit.transform.GetComponent<Renderer>();
+                    MeshCollider meshCollider = hit.collider as MeshCollider;
+
+                    if (rend == null || rend.sharedMaterial == null || rend.sharedMaterial.mainTexture == null || meshCollider == null)
                     {
-                        //Debug.Log(hit.textureCoord);
-                        //Debug.Log(hit.point);
-
-                        Renderer rend = hit.transform.GetComponent<Renderer>();
-                        MeshCollider meshCollider = hit.collider as MeshCollider;
-
-                        if (rend == null || rend.sharedMaterial == null || rend.sharedMaterial.mainTexture == null || meshCollider == null)
-                            return;
-
-                        Texture2D tex = rend.material.mainTexture as Texture2D;
-                        Vector2 pixelUV = hit.textureCoord;
-                        pixelUV.x *= tex.width;
-                        pixelUV.y *= tex.height;
-
-                        BrushAreaWithColor(pixelUV, SelectedColor, (int)slider.value);
+                       // Debug.Log("something was null");
+                        return;
                     }
-                    else
-                    {
-                        Renderer rend = hit.transform.GetComponent<Renderer>();
-                        MeshCollider meshCollider = hit.collider as MeshCollider;
 
-                        if (rend == null || rend.sharedMaterial == null || rend.sharedMaterial.mainTexture == null || meshCollider == null)
-                        {
-                            // Debug.Log("something was null");
-                            return;
-                        }
-
-                        Texture2D tex = rend.material.mainTexture as Texture2D;
-                        Vector2 pixelUV = hit.textureCoord;
-                        pixelUV.x *= tex.width;
-                        pixelUV.y *= tex.height;
-                        SelectedColor = tex.GetPixel((int)pixelUV.x, (int)pixelUV.y);
-                        // Debug.Log("SelectedColor = " + SelectedColor);
+                    Texture2D tex = rend.material.mainTexture as Texture2D;
+                    Vector2 pixelUV = hit.textureCoord;
+                    pixelUV.x *= tex.width;
+                    pixelUV.y *= tex.height;
+                    SelectedColor = tex.GetPixel((int)pixelUV.x, (int)pixelUV.y);
+                   // Debug.Log("SelectedColor = " + SelectedColor);
 
 
-                    }
                 }
             }
             
