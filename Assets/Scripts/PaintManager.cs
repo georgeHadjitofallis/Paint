@@ -6,7 +6,11 @@ using UnityEngine.EventSystems;
 
 public class PaintManager : MonoBehaviour
 {
-
+    public static Color SelectedColor { get; private set; }
+    void Awake()
+    {
+        SelectedColor = Color.black;
+    }
     void Start()
     {
     
@@ -17,18 +21,22 @@ public class PaintManager : MonoBehaviour
         //Check if the left Mouse button is clicked
         if (Input.GetKey(KeyCode.Mouse0))
         {
-            Debug.Log("Pressed");
+            //Debug.Log("Pressed");
+
+
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                Debug.Log("HIT");
+                //Debug.Log("HIT");
+                Debug.Log(hit.collider.gameObject.name);
+
                 var pallet = hit.collider.GetComponent<PaintCanvas>();
                 if (pallet != null)
                 {
-                    Debug.Log(hit.textureCoord);
-                    Debug.Log(hit.point);
+                    //Debug.Log(hit.textureCoord);
+                    //Debug.Log(hit.point);
 
                     Renderer rend = hit.transform.GetComponent<Renderer>();
                     MeshCollider meshCollider = hit.collider as MeshCollider;
@@ -41,9 +49,30 @@ public class PaintManager : MonoBehaviour
                     pixelUV.x *= tex.width;
                     pixelUV.y *= tex.height;
 
-                    BrushAreaWithColor(pixelUV, Color.black, 1);
+                    BrushAreaWithColor(pixelUV, SelectedColor, 1);
+                }
+                else
+                {
+                    Renderer rend = hit.transform.GetComponent<Renderer>();
+                    MeshCollider meshCollider = hit.collider as MeshCollider;
+
+                    if (rend == null || rend.sharedMaterial == null || rend.sharedMaterial.mainTexture == null || meshCollider == null)
+                    {
+                       // Debug.Log("something was null");
+                        return;
+                    }
+
+                    Texture2D tex = rend.material.mainTexture as Texture2D;
+                    Vector2 pixelUV = hit.textureCoord;
+                    pixelUV.x *= tex.width;
+                    pixelUV.y *= tex.height;
+                    SelectedColor = tex.GetPixel((int)pixelUV.x, (int)pixelUV.y);
+                   // Debug.Log("SelectedColor = " + SelectedColor);
+
+
                 }
             }
+            
         }
     }
 
