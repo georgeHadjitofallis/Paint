@@ -28,6 +28,14 @@ public class PaintCanvas : MonoBehaviour
         Debug.Log(Texture.width);
         Debug.Log(Texture.height);
         Texture.Resize(1000, 1000);
+        for (int x = 0; x < Texture.height; x++)
+        {
+            for (int y = 0; y < Texture.width; y++)
+            {
+                PaintCanvas.Texture.SetPixel( x,  y, Color.white);
+            }
+        }
+        Texture.Apply();
         Debug.Log(Texture.width);
         Debug.Log(Texture.height);
         GetComponent<Renderer>().material.mainTexture = Texture;
