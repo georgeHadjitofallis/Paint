@@ -7,7 +7,9 @@ using UnityEngine.EventSystems;
 public class PaintManager : MonoBehaviour
 {
     public static Color SelectedColor { get; private set; }
-    public static int PenSize { get; private set; }
+
+    public Slider slider;
+
     void Awake()
     {
         SelectedColor = Color.black;
@@ -20,57 +22,59 @@ public class PaintManager : MonoBehaviour
     void FixedUpdate()
     {
         //Check if the left Mouse button is clicked
-        if (Input.GetKey(KeyCode.Mouse0))
+        if (Input.GetKey(KeyCode.Mouse1))
         {
             //Debug.Log("Pressed");
 
-
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
+            if (!EventSystem.current.IsPointerOverGameObject())
             {
-                //Debug.Log("HIT");
-                Debug.Log(hit.collider.gameObject.name);
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-                var pallet = hit.collider.GetComponent<PaintCanvas>();
-                if (pallet != null)
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit))
                 {
-                    //Debug.Log(hit.textureCoord);
-                    //Debug.Log(hit.point);
+                    //Debug.Log("HIT");
+                    Debug.Log(hit.collider.gameObject.name);
 
-                    Renderer rend = hit.transform.GetComponent<Renderer>();
-                    MeshCollider meshCollider = hit.collider as MeshCollider;
-
-                    if (rend == null || rend.sharedMaterial == null || rend.sharedMaterial.mainTexture == null || meshCollider == null)
-                        return;
-
-                    Texture2D tex = rend.material.mainTexture as Texture2D;
-                    Vector2 pixelUV = hit.textureCoord;
-                    pixelUV.x *= tex.width;
-                    pixelUV.y *= tex.height;
-
-                    BrushAreaWithColor(pixelUV, SelectedColor, PenSize);
-                }
-                else
-                {
-                    Renderer rend = hit.transform.GetComponent<Renderer>();
-                    MeshCollider meshCollider = hit.collider as MeshCollider;
-
-                    if (rend == null || rend.sharedMaterial == null || rend.sharedMaterial.mainTexture == null || meshCollider == null)
+                    var pallet = hit.collider.GetComponent<PaintCanvas>();
+                    if (pallet != null)
                     {
-                       // Debug.Log("something was null");
-                        return;
+                        //Debug.Log(hit.textureCoord);
+                        //Debug.Log(hit.point);
+
+                        Renderer rend = hit.transform.GetComponent<Renderer>();
+                        MeshCollider meshCollider = hit.collider as MeshCollider;
+
+                        if (rend == null || rend.sharedMaterial == null || rend.sharedMaterial.mainTexture == null || meshCollider == null)
+                            return;
+
+                        Texture2D tex = rend.material.mainTexture as Texture2D;
+                        Vector2 pixelUV = hit.textureCoord;
+                        pixelUV.x *= tex.width;
+                        pixelUV.y *= tex.height;
+
+                        BrushAreaWithColor(pixelUV, SelectedColor, (int)slider.value);
                     }
+                    else
+                    {
+                        Renderer rend = hit.transform.GetComponent<Renderer>();
+                        MeshCollider meshCollider = hit.collider as MeshCollider;
 
-                    Texture2D tex = rend.material.mainTexture as Texture2D;
-                    Vector2 pixelUV = hit.textureCoord;
-                    pixelUV.x *= tex.width;
-                    pixelUV.y *= tex.height;
-                    SelectedColor = tex.GetPixel((int)pixelUV.x, (int)pixelUV.y);
-                   // Debug.Log("SelectedColor = " + SelectedColor);
+                        if (rend == null || rend.sharedMaterial == null || rend.sharedMaterial.mainTexture == null || meshCollider == null)
+                        {
+                            // Debug.Log("something was null");
+                            return;
+                        }
+
+                        Texture2D tex = rend.material.mainTexture as Texture2D;
+                        Vector2 pixelUV = hit.textureCoord;
+                        pixelUV.x *= tex.width;
+                        pixelUV.y *= tex.height;
+                        SelectedColor = tex.GetPixel((int)pixelUV.x, (int)pixelUV.y);
+                        // Debug.Log("SelectedColor = " + SelectedColor);
 
 
+                    }
                 }
             }
             
@@ -88,10 +92,5 @@ public class PaintManager : MonoBehaviour
         }
 
         PaintCanvas.Texture.Apply();
-    }
-
-    public void ChangeWindDirection(Slider slider)
-    {
-        Debug.Log("New wind direction: " + slider.value);
     }
 }
